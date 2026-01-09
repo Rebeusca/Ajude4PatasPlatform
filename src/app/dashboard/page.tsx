@@ -69,25 +69,26 @@ export default function DashboardPage() {
   return (
     <DashboardLayout>
       <div className="bg-white rounded-lg shadow-sm p-6">
-        <h2 className="text-3xl font-semibold text-gray-900 mb-6">Dashboard Geral</h2>
-        <div className="space-y-6">
-          {/* Primeira linha: 3 cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <h1 className="text-md text-gray-500 mb-2">Bem-vindo de volta, {session.user.name}!</h1>
+        <h2 className="text-3xl font-semibold text-gray-900 mb-8">dashboard geral</h2>
+      <div className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <AnimalsAdmittedCard stats={stats} />
             <AnimalsAdoptedCard stats={stats} />
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <AdoptionsOverviewCard stats={stats} />
             <DonationsCard stats={stats} />
           </div>
 
-          {/* Segunda linha: 2 cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <AdoptionsOverviewCard stats={stats} />
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <TotalBalanceCard stats={stats} />
+            <ActiveVolunteersCard stats={stats} />
           </div>
 
-          {/* Terceira linha: 2 cards (gráfico grande + lista) */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <MovementsOverviewCard stats={stats} />
-            <ActiveVolunteersCard stats={stats} />
           </div>
         </div>
       </div>
@@ -102,28 +103,49 @@ function AnimalsAdmittedCard({ stats }: { stats: DashboardStats }) {
   const outros = stats.animalsBySpecies['outro'] || stats.animalsBySpecies['outros'] || 0
   const totalSpecies = caes + gatos + outros || 1
 
+  const caesPercent = totalSpecies > 0 ? (caes / totalSpecies) * 100 : 0
+  const gatosPercent = totalSpecies > 0 ? (gatos / totalSpecies) * 100 : 0
+  const outrosPercent = totalSpecies > 0 ? (outros / totalSpecies) * 100 : 0
+
   return (
     <div className="bg-white rounded-lg shadow-lg p-6">
-      <h3 className="text-sm font-medium text-gray-600 mb-2">animais admitidos</h3>
-      <p className="text-2xl font-bold text-gray-900 mb-1">{total} animais</p>
-      <p className="text-xs text-gray-500 mb-4">desde o último mês</p>
-      <div className="space-y-2">
-        <div className="flex items-center justify-between">
-          <span className="text-xs text-gray-600">cães</span>
-          <div className="flex-1 mx-2 h-2 bg-gray-200 rounded-full overflow-hidden">
-            <div className="h-full bg-orange-400 rounded-full" style={{ width: `${(caes / totalSpecies) * 100}%` }}></div>
+      <p className="text-3xl font-bold text-gray-900 mb-1">{total} animais</p>
+      <p className="text-sm text-gray-500 mb-10">admitidos desde o último mês</p>
+      <div className="space-y-3">
+        <div className="flex items-center gap-3">
+          <span className="text-sm text-gray-600 w-16">cães</span>
+          <div className="flex-1 h-4 bg-gray-200 rounded-full overflow-visible relative group">
+            <div 
+              className="h-full bg-orange-400 rounded-full cursor-pointer" 
+              style={{ width: `${caesPercent}%` }}
+            ></div>
+            <div className="absolute left-1/2 transform -translate-x-1/2 bottom-full mb-2 hidden group-hover:block bg-gray-900 text-white text-xs rounded py-1 px-2 whitespace-nowrap z-10">
+              {caes} animais ({Math.round(caesPercent)}%)
+            </div>
           </div>
         </div>
-        <div className="flex items-center justify-between">
-          <span className="text-xs text-gray-600">gatos</span>
-          <div className="flex-1 mx-2 h-2 bg-gray-200 rounded-full overflow-hidden">
-            <div className="h-full bg-orange-400 rounded-full" style={{ width: `${(gatos / totalSpecies) * 100}%` }}></div>
+        <div className="flex items-center gap-3">
+          <span className="text-sm text-gray-600 w-16">gatos</span>
+          <div className="flex-1 h-4 bg-gray-200 rounded-full overflow-visible relative group">
+            <div 
+              className="h-full bg-orange-400 rounded-full cursor-pointer" 
+              style={{ width: `${gatosPercent}%` }}
+            ></div>
+            <div className="absolute left-1/2 transform -translate-x-1/2 bottom-full mb-2 hidden group-hover:block bg-gray-900 text-white text-xs rounded py-1 px-2 whitespace-nowrap z-10">
+              {gatos} animais ({Math.round(gatosPercent)}%)
+            </div>
           </div>
         </div>
-        <div className="flex items-center justify-between">
-          <span className="text-xs text-gray-600">outros</span>
-          <div className="flex-1 mx-2 h-2 bg-gray-200 rounded-full overflow-hidden">
-            <div className="h-full bg-gray-400 rounded-full" style={{ width: `${(outros / totalSpecies) * 100}%` }}></div>
+        <div className="flex items-center gap-3">
+          <span className="text-sm text-gray-600 w-16">outros</span>
+          <div className="flex-1 h-4 bg-gray-200 rounded-full overflow-visible relative group">
+            <div 
+              className="h-full bg-gray-400 rounded-full cursor-pointer" 
+              style={{ width: `${outrosPercent}%` }}
+            ></div>
+            <div className="absolute left-1/2 transform -translate-x-1/2 bottom-full mb-2 hidden group-hover:block bg-gray-900 text-white text-xs rounded py-1 px-2 whitespace-nowrap z-10">
+              {outros} animais ({Math.round(outrosPercent)}%)
+            </div>
           </div>
         </div>
       </div>
@@ -138,28 +160,49 @@ function AnimalsAdoptedCard({ stats }: { stats: DashboardStats }) {
   const outros = stats.adoptionsBySpecies['outro'] || stats.adoptionsBySpecies['outros'] || 0
   const totalSpecies = caes + gatos + outros || 1
 
+  const caesPercent = totalSpecies > 0 ? (caes / totalSpecies) * 100 : 0
+  const gatosPercent = totalSpecies > 0 ? (gatos / totalSpecies) * 100 : 0
+  const outrosPercent = totalSpecies > 0 ? (outros / totalSpecies) * 100 : 0
+
   return (
     <div className="bg-white rounded-lg shadow-lg p-6">
-      <h3 className="text-sm font-medium text-gray-600 mb-2">animais adotados</h3>
-      <p className="text-2xl font-bold text-gray-900 mb-1">{total} adoções</p>
-      <p className="text-xs text-gray-500 mb-4">desde o último mês</p>
-      <div className="space-y-2">
-        <div className="flex items-center justify-between">
-          <span className="text-xs text-gray-600">cães</span>
-          <div className="flex-1 mx-2 h-2 bg-gray-200 rounded-full overflow-hidden">
-            <div className="h-full bg-orange-400 rounded-full" style={{ width: `${(caes / totalSpecies) * 100}%` }}></div>
+      <p className="text-3xl font-bold text-gray-900 mb-1">{total} adoções</p>
+      <p className="text-sm text-gray-500 mb-10">desde o último mês</p>
+      <div className="space-y-3">
+        <div className="flex items-center gap-3">
+          <span className="text-sm text-gray-600 w-16">cães</span>
+          <div className="flex-1 h-4 bg-gray-200 rounded-full overflow-visible relative group">
+            <div 
+              className="h-full bg-orange-400 rounded-full cursor-pointer" 
+              style={{ width: `${caesPercent}%` }}
+            ></div>
+            <div className="absolute left-1/2 transform -translate-x-1/2 bottom-full mb-2 hidden group-hover:block bg-gray-900 text-white text-xs rounded py-1 px-2 whitespace-nowrap z-10">
+              {caes} adoções ({Math.round(caesPercent)}%)
+            </div>
           </div>
         </div>
-        <div className="flex items-center justify-between">
-          <span className="text-xs text-gray-600">gatos</span>
-          <div className="flex-1 mx-2 h-2 bg-gray-200 rounded-full overflow-hidden">
-            <div className="h-full bg-orange-400 rounded-full" style={{ width: `${(gatos / totalSpecies) * 100}%` }}></div>
+        <div className="flex items-center gap-3">
+          <span className="text-sm text-gray-600 w-16">gatos</span>
+          <div className="flex-1 h-4 bg-gray-200 rounded-full overflow-visible relative group">
+            <div 
+              className="h-full bg-orange-400 rounded-full cursor-pointer" 
+              style={{ width: `${gatosPercent}%` }}
+            ></div>
+            <div className="absolute left-1/2 transform -translate-x-1/2 bottom-full mb-2 hidden group-hover:block bg-gray-900 text-white text-xs rounded py-1 px-2 whitespace-nowrap z-10">
+              {gatos} adoções ({Math.round(gatosPercent)}%)
+            </div>
           </div>
         </div>
-        <div className="flex items-center justify-between">
-          <span className="text-xs text-gray-600">outros</span>
-          <div className="flex-1 mx-2 h-2 bg-gray-200 rounded-full overflow-hidden">
-            <div className="h-full bg-gray-400 rounded-full" style={{ width: `${(outros / totalSpecies) * 100}%` }}></div>
+        <div className="flex items-center gap-3">
+          <span className="text-sm text-gray-600 w-16">outros</span>
+          <div className="flex-1 h-4 bg-gray-200 rounded-full overflow-visible relative group">
+            <div 
+              className="h-full bg-gray-400 rounded-full cursor-pointer" 
+              style={{ width: `${outrosPercent}%` }}
+            ></div>
+            <div className="absolute left-1/2 transform -translate-x-1/2 bottom-full mb-2 hidden group-hover:block bg-gray-900 text-white text-xs rounded py-1 px-2 whitespace-nowrap z-10">
+              {outros} adoções ({Math.round(outrosPercent)}%)
+            </div>
           </div>
         </div>
       </div>
@@ -177,14 +220,16 @@ function DonationsCard({ stats }: { stats: DashboardStats }) {
   const pixPercent = (pix / totalMethods) * 100
   const boletoPercent = (boleto / totalMethods) * 100
   const cartaoPercent = (cartao.count / totalMethods) * 100
+  const pixTotal = stats.donationsByMethod['pix']?.total || 0
+  const boletoTotal = stats.donationsByMethod['boleto']?.total || 0
+  const cartaoTotal = cartao.total || 0
 
   return (
     <div className="bg-white rounded-lg shadow-lg p-6">
-      <h3 className="text-sm font-medium text-gray-600 mb-2">doações</h3>
-      <p className="text-2xl font-bold text-gray-900 mb-1">{total} doações</p>
-      <p className="text-xs text-gray-500 mb-4">desde o último mês</p>
+      <p className="text-3xl font-bold text-gray-900 mb-1">{total} doações</p>
+      <p className="text-sm text-gray-500 mb-10">desde o último mês</p>
       <div className="flex items-center justify-center">
-        <div className="relative w-32 h-32">
+        <div className="relative w-40 h-40">
           <svg className="transform -rotate-90" viewBox="0 0 100 100">
             <circle
               cx="50"
@@ -192,7 +237,7 @@ function DonationsCard({ stats }: { stats: DashboardStats }) {
               r="40"
               fill="none"
               stroke="#e5e7eb"
-              strokeWidth="8"
+              strokeWidth="12"
             />
             <circle
               cx="50"
@@ -200,9 +245,10 @@ function DonationsCard({ stats }: { stats: DashboardStats }) {
               r="40"
               fill="none"
               stroke="#f97316"
-              strokeWidth="8"
+              strokeWidth="12"
               strokeDasharray={`${pixPercent * 2.51} ${100 * 2.51}`}
               strokeDashoffset="0"
+              className="cursor-pointer hover:opacity-80 transition-opacity group"
             />
             <circle
               cx="50"
@@ -210,9 +256,10 @@ function DonationsCard({ stats }: { stats: DashboardStats }) {
               r="40"
               fill="none"
               stroke="#0DB2AC"
-              strokeWidth="8"
+              strokeWidth="12"
               strokeDasharray={`${boletoPercent * 2.51} ${100 * 2.51}`}
               strokeDashoffset={`-${pixPercent * 2.51}`}
+              className="cursor-pointer hover:opacity-80 transition-opacity group"
             />
             <circle
               cx="50"
@@ -220,17 +267,49 @@ function DonationsCard({ stats }: { stats: DashboardStats }) {
               r="40"
               fill="none"
               stroke="#6b7280"
-              strokeWidth="8"
+              strokeWidth="12"
               strokeDasharray={`${cartaoPercent * 2.51} ${100 * 2.51}`}
               strokeDashoffset={`-${(pixPercent + boletoPercent) * 2.51}`}
+              className="cursor-pointer hover:opacity-80 transition-opacity group"
             />
           </svg>
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="text-center">
-              <p className="text-xs text-gray-600">{Math.round(pixPercent)}% pix</p>
-              <p className="text-xs text-gray-600">{Math.round(boletoPercent)}% boleto</p>
-              <p className="text-xs text-gray-600">{Math.round(cartaoPercent)}% cartão</p>
+        </div>
+      </div>
+      <div className="mt-10 space-y-2">
+        <div className="relative group">
+          <div className="flex items-center justify-between text-xs cursor-pointer">
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 bg-orange-400 rounded-full"></div>
+              <span className="text-gray-600">PIX</span>
             </div>
+            <span className="text-gray-900 font-medium">{Math.round(pixPercent)}%</span>
+          </div>
+          <div className="absolute bottom-full left-0 mb-2 hidden group-hover:block bg-gray-900 text-white text-xs rounded py-1 px-2 whitespace-nowrap z-10">
+            {pix} doações ({Math.round(pixPercent)}%) - R$ {pixTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+          </div>
+        </div>
+        <div className="relative group">
+          <div className="flex items-center justify-between text-xs cursor-pointer">
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#0DB2AC' }}></div>
+              <span className="text-gray-600">Boleto</span>
+            </div>
+            <span className="text-gray-900 font-medium">{Math.round(boletoPercent)}%</span>
+          </div>
+          <div className="absolute bottom-full left-0 mb-2 hidden group-hover:block bg-gray-900 text-white text-xs rounded py-1 px-2 whitespace-nowrap z-10">
+            {boleto} doações ({Math.round(boletoPercent)}%) - R$ {boletoTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+          </div>
+        </div>
+        <div className="relative group">
+          <div className="flex items-center justify-between text-xs cursor-pointer">
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 bg-gray-400 rounded-full"></div>
+              <span className="text-gray-600">Cartão</span>
+            </div>
+            <span className="text-gray-900 font-medium">{Math.round(cartaoPercent)}%</span>
+          </div>
+          <div className="absolute bottom-full left-0 mb-2 hidden group-hover:block bg-gray-900 text-white text-xs rounded py-1 px-2 whitespace-nowrap z-10">
+            {cartao.count} doações ({Math.round(cartaoPercent)}%) - R$ {cartaoTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
           </div>
         </div>
       </div>
@@ -250,8 +329,8 @@ function AdoptionsOverviewCard({ stats }: { stats: DashboardStats }) {
 
   return (
     <div className="bg-white rounded-lg shadow-lg p-6">
-      <h3 className="text-sm font-medium text-gray-600 mb-2">visão geral de adoções</h3>
-      <p className="text-xs text-gray-500 mb-4">desde o último mês</p>
+      <p className="text-3xl font-bold text-gray-900 mb-1">visão geral de adoções</p>
+      <p className="text-sm text-gray-500 mb-10">desde o último mês</p>
       <div className="flex items-center justify-center">
         <div className="relative w-40 h-40">
           <svg className="transform -rotate-90" viewBox="0 0 100 100">
@@ -261,7 +340,7 @@ function AdoptionsOverviewCard({ stats }: { stats: DashboardStats }) {
               r="40"
               fill="none"
               stroke="#e5e7eb"
-              strokeWidth="8"
+              strokeWidth="12"
             />
             <circle
               cx="50"
@@ -269,9 +348,10 @@ function AdoptionsOverviewCard({ stats }: { stats: DashboardStats }) {
               r="40"
               fill="none"
               stroke="#0DB2AC"
-              strokeWidth="8"
+              strokeWidth="12"
               strokeDasharray={`${finalizadosPercent * 2.51} ${100 * 2.51}`}
               strokeDashoffset="0"
+              className="cursor-pointer hover:opacity-80 transition-opacity"
             />
             <circle
               cx="50"
@@ -279,9 +359,10 @@ function AdoptionsOverviewCard({ stats }: { stats: DashboardStats }) {
               r="40"
               fill="none"
               stroke="#f97316"
-              strokeWidth="8"
+              strokeWidth="12"
               strokeDasharray={`${acompanhamentoPercent * 2.51} ${100 * 2.51}`}
               strokeDashoffset={`-${finalizadosPercent * 2.51}`}
+              className="cursor-pointer hover:opacity-80 transition-opacity"
             />
             <circle
               cx="50"
@@ -289,17 +370,49 @@ function AdoptionsOverviewCard({ stats }: { stats: DashboardStats }) {
               r="40"
               fill="none"
               stroke="#6b7280"
-              strokeWidth="8"
+              strokeWidth="12"
               strokeDasharray={`${andamentoPercent * 2.51} ${100 * 2.51}`}
               strokeDashoffset={`-${(finalizadosPercent + acompanhamentoPercent) * 2.51}`}
+              className="cursor-pointer hover:opacity-80 transition-opacity"
             />
           </svg>
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="text-center">
-              <p className="text-xs text-gray-600">{Math.round(finalizadosPercent)}% finalizados</p>
-              <p className="text-xs text-gray-600">{Math.round(acompanhamentoPercent)}% em acompanhamento</p>
-              <p className="text-xs text-gray-600">{Math.round(andamentoPercent)}% em andamento</p>
+        </div>
+      </div>
+      <div className="mt-10 space-y-2">
+        <div className="relative group">
+          <div className="flex items-center justify-between text-xs cursor-pointer">
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#0DB2AC' }}></div>
+              <span className="text-gray-600">Finalizados</span>
             </div>
+            <span className="text-gray-900 font-medium">{Math.round(finalizadosPercent)}%</span>
+          </div>
+          <div className="absolute bottom-full left-0 mb-2 hidden group-hover:block bg-gray-900 text-white text-xs rounded py-1 px-2 whitespace-nowrap z-10">
+            {finalizados} adoções ({Math.round(finalizadosPercent)}%)
+          </div>
+        </div>
+        <div className="relative group">
+          <div className="flex items-center justify-between text-xs cursor-pointer">
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 bg-orange-400 rounded-full"></div>
+              <span className="text-gray-600">Em acompanhamento</span>
+            </div>
+            <span className="text-gray-900 font-medium">{Math.round(acompanhamentoPercent)}%</span>
+          </div>
+          <div className="absolute bottom-full left-0 mb-2 hidden group-hover:block bg-gray-900 text-white text-xs rounded py-1 px-2 whitespace-nowrap z-10">
+            {acompanhamento} adoções ({Math.round(acompanhamentoPercent)}%)
+          </div>
+        </div>
+        <div className="relative group">
+          <div className="flex items-center justify-between text-xs cursor-pointer">
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 bg-gray-400 rounded-full"></div>
+              <span className="text-gray-600">Em andamento</span>
+            </div>
+            <span className="text-gray-900 font-medium">{Math.round(andamentoPercent)}%</span>
+          </div>
+          <div className="absolute bottom-full left-0 mb-2 hidden group-hover:block bg-gray-900 text-white text-xs rounded py-1 px-2 whitespace-nowrap z-10">
+            {andamento} adoções ({Math.round(andamentoPercent)}%)
           </div>
         </div>
       </div>
@@ -314,9 +427,10 @@ function TotalBalanceCard({ stats }: { stats: DashboardStats }) {
   })
 
   return (
-    <div className="bg-white rounded-lg shadow-lg p-6 flex items-center justify-center">
+    <div className="bg-white rounded-lg shadow-lg p-6 flex items-center justify-center min-h-[300px]">
       <div className="text-center">
-        <p className="text-sm font-medium text-gray-600 mb-2">saldo total em caixa</p>
+        <p className="text-3xl font-bold text-gray-900 mb-1">saldo total em caixa</p>
+        <p className="text-sm text-gray-500 mb-10">desde o último mês</p>
         <p className="text-5xl font-bold text-gray-900">{balance}</p>
         <p className="text-sm text-gray-500 mt-2">reais</p>
       </div>
@@ -326,6 +440,7 @@ function TotalBalanceCard({ stats }: { stats: DashboardStats }) {
 
 function MovementsOverviewCard({ stats }: { stats: DashboardStats }) {
   const maxValue = Math.max(...stats.monthlyMovements.map(m => m.value), 1)
+  const total = stats.monthlyMovements.reduce((sum, m) => sum + m.value, 0)
   
   return (
     <div className="bg-white rounded-lg shadow-lg p-6 lg:col-span-2">
@@ -333,10 +448,11 @@ function MovementsOverviewCard({ stats }: { stats: DashboardStats }) {
       <div className="h-64 flex items-end justify-between gap-2">
         {stats.monthlyMovements.map((movement) => {
           const height = maxValue > 0 ? (movement.value / maxValue) * 100 : 0
+          const percent = total > 0 ? (movement.value / total) * 100 : 0
           return (
-            <div key={movement.month} className="flex-1 flex flex-col items-center">
+            <div key={movement.month} className="flex-1 flex flex-col items-center relative group">
               <div 
-                className="w-full rounded-t" 
+                className="w-full rounded-t cursor-pointer hover:opacity-80 transition-opacity" 
                 style={{ 
                   backgroundColor: '#0DB2AC', 
                   height: `${Math.max(height, 5)}%`,
@@ -344,7 +460,10 @@ function MovementsOverviewCard({ stats }: { stats: DashboardStats }) {
                 }}
               ></div>
               <span className="text-xs text-gray-500 mt-2">{movement.month}</span>
-            </div>
+              <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 hidden group-hover:block bg-gray-900 text-white text-xs rounded py-1 px-2 whitespace-nowrap z-10">
+                R$ {movement.value.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ({Math.round(percent)}%)
+              </div>
+        </div>
           )
         })}
       </div>
@@ -354,11 +473,11 @@ function MovementsOverviewCard({ stats }: { stats: DashboardStats }) {
 
 function ActiveVolunteersCard({ stats }: { stats: DashboardStats }) {
   return (
-    <div className="bg-white rounded-lg shadow-lg p-6">
-      <h3 className="text-sm font-medium text-gray-600 mb-4">voluntários ativos</h3>
-      <div className="space-y-3">
-        {stats.activeVolunteers.length > 0 ? (
-          stats.activeVolunteers.map((volunteer, index) => (
+    <div className="bg-white rounded-lg shadow-lg p-6 min-h-[300px] flex flex-col">
+      <p className="text-3xl font-bold text-gray-900 mb-1">voluntários ativos</p>
+      {stats.activeVolunteers.length > 0 ? (
+        <div className="space-y-3">
+          {stats.activeVolunteers.map((volunteer, index) => (
             <div key={index} className="flex items-center gap-3">
               <div className="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center">
                 <span className="text-xs text-gray-600">{volunteer.name.charAt(0)}</span>
@@ -368,11 +487,13 @@ function ActiveVolunteersCard({ stats }: { stats: DashboardStats }) {
                 <p className="text-xs text-gray-500">data de entrada: {volunteer.date}</p>
               </div>
             </div>
-          ))
-        ) : (
-          <p className="text-sm text-gray-500">Nenhum voluntário ativo</p>
-        )}
-      </div>
+          ))}
+        </div>
+      ) : (
+        <div className="flex-1 flex items-center justify-center">
+          <p className="text-md text-gray-500 text-center">nenhum voluntário ativo 😢</p>
+        </div>
+      )}
     </div>
   )
 }

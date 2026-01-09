@@ -4,18 +4,19 @@ import { useSession, signOut } from "next-auth/react"
 import { useRouter, usePathname } from "next/navigation"
 import Image from "next/image"
 import Link from "next/link"
+import { HomeIcon, PawPrintIcon, HeartPulseIcon, UsersIcon, HeartHandshakeIcon, HeartIcon } from "lucide-react"
 
 interface DashboardLayoutProps {
   children: React.ReactNode
 }
 
 const navigationItems = [
-  { name: "visão geral", href: "/dashboard" },
-  { name: "animais", href: "/dashboard/animais" },
-  { name: "histórico veterinário", href: "/dashboard/veterinario" },
-  { name: "voluntários", href: "/dashboard/voluntarios" },
-  { name: "doações", href: "/dashboard/doacoes" },
-  { name: "adoções", href: "/dashboard/adocoes" },
+  { name: "visão geral", href: "/dashboard", icon: <HomeIcon /> },
+  { name: "animais", href: "/dashboard/animais", icon: <PawPrintIcon /> },
+  { name: "histórico veterinário", href: "/dashboard/veterinario", icon: <HeartPulseIcon /> },
+  { name: "voluntários", href: "/dashboard/voluntarios", icon: <UsersIcon /> },
+  { name: "doações", href: "/dashboard/doacoes", icon: <HeartHandshakeIcon /> },
+  { name: "adoções", href: "/dashboard/adocoes", icon: < HeartIcon /> },
 ]
 
 export function DashboardLayout({ children }: DashboardLayoutProps) {
@@ -50,7 +51,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 p-4 space-y-2">
+        <nav className="flex-1 pt-4 pb-4 pl-4 pr-0 space-y-2">
           {navigationItems.map((item) => {
             const isActive = pathname === item.href || 
               (item.href !== "/dashboard" && pathname?.startsWith(item.href))
@@ -60,7 +61,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                 key={item.href}
                 href={item.href}
                 className={`
-                  flex items-center gap-3 px-4 py-3 rounded-lg transition-colors
+                  flex items-center gap-3 pl-4 pr-4 py-3 rounded-l-lg transition-colors
                   ${isActive 
                     ? "text-white font-medium" 
                     : "text-white/90 hover:bg-white/10"
@@ -68,7 +69,8 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                 `}
                 style={isActive ? { backgroundColor: '#0A8C87' } : {}}
               >
-                <span className="capitalize">{item.name}</span>
+                <span className="text-sm">{item.icon}</span>
+                <span className="capitalize text-sm">{item.name}</span>
               </Link>
             )
           })}

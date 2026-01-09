@@ -153,13 +153,9 @@ export default function AnimaisPage() {
   return (
     <DashboardLayout>
       <div className="bg-white rounded-lg shadow-sm p-6">
-        <div className="mb-6">
-          <h2 className="text-3xl font-semibold text-gray-900 mb-6">Animais</h2>
-        </div>
-
-        <div className="mb-6 bg-gray-50 rounded-lg p-6">
+        <div className="mb-6 bg-white rounded-lg p-6 shadow-xl">
           <h3 className="text-xl font-semibold text-gray-900 mb-4">
-            {editingAnimal ? "Editar Animal" : "Novo Animal"}
+            {editingAnimal ? "editar animal" : "cadastrar novo animal"}
           </h3>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -237,6 +233,32 @@ export default function AnimaisPage() {
               </div>
             </form>
           </div>
+
+        {/* Estatísticas */}
+        <div className="mb-6 grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="bg-gray-50 rounded-lg p-4 border border-gray-300">
+            <p className="text-sm text-gray-600 mb-1">Total</p>
+            <p className="text-2xl font-bold text-gray-900">{animals.length}</p>
+          </div>
+          <div className="bg-green-50 rounded-lg p-4 border border-green-300">
+            <p className="text-sm text-green-700 mb-1">Disponíveis</p>
+            <p className="text-2xl font-bold text-green-900">
+              {animals.filter(a => a.status === "disponível").length}
+            </p>
+          </div>
+          <div className="bg-yellow-50 rounded-lg p-4 border border-yellow-300">
+            <p className="text-sm text-yellow-700 mb-1">Em Tratamento</p>
+            <p className="text-2xl font-bold text-yellow-900">
+              {animals.filter(a => a.status === "em tratamento").length}
+            </p>
+          </div>
+          <div className="bg-blue-50 rounded-lg p-4 border border-blue-300">
+            <p className="text-sm text-blue-700 mb-1">Adotados</p>
+            <p className="text-2xl font-bold text-blue-900">
+              {animals.filter(a => a.status === "adotado").length}
+            </p>
+          </div>
+        </div>
 
         <div className="overflow-x-auto">
           <table className="min-w-full bg-white border border-gray-200 rounded-lg">

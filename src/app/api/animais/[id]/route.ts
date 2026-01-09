@@ -3,11 +3,12 @@ import { prisma } from "@/lib/prisma"
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
     const animal = await prisma.animal.findUnique({
-      where: { id: params.id }
+      where: { id }
     })
 
     if (!animal) {
@@ -29,9 +30,10 @@ export async function GET(
 
 export async function PUT(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
     const body = await request.json()
     const { name, species, breed, age, gender, status } = body
 
@@ -42,8 +44,24 @@ export async function PUT(
       )
     }
 
+    // Buscar o animal atual para verificar o status anterior
+    const animalBefore = await prisma.animal.findUnique({
+      where: { id },
+      include: {
+        adoptions: true
+      }
+    })
+
+    if (!animalBefore) {
+      return NextResponse.json(
+        { error: "Animal não encontrado" },
+        { status: 404 }
+      )
+    }
+
+    // Atualizar o animal
     const animal = await prisma.animal.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         name,
         species,
@@ -53,6 +71,23 @@ export async function PUT(
         status: status || "disponível"
       }
     })
+
+    // Se o status foi alterado para "adotado" e não existe registro de adoção, criar um
+    if (status === "adotado") {
+      const existingAdoption = await prisma.adoption.findFirst({
+        where: { animalId: id }
+      })
+
+      if (!existingAdoption) {
+        await prisma.adoption.create({
+          data: {
+            animalId: id,
+            adopterName: "Adotador não informado",
+            status: "finalizado"
+          }
+        })
+      }
+    }
 
     return NextResponse.json(animal)
   } catch (error) {
@@ -66,11 +101,12 @@ export async function PUT(
 
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
     await prisma.animal.delete({
-      where: { id: params.id }
+      where: { id }
     })
 
     return NextResponse.json({ success: true })
