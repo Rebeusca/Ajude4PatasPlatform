@@ -1,0 +1,336 @@
+"use client"
+
+import { useSession } from "next-auth/react"
+import { redirect } from "next/navigation"
+import { useEffect, useState } from "react"
+import { DashboardLayout } from "@/components/dashboard/DashboardLayout"
+import { Button } from "@/components/ui/Button"
+import { Input } from "@/components/ui/Input"
+
+interface Animal {
+  id: string
+  name: string
+  species: string
+  breed: string | null
+  age: number | null
+  gender: string | null
+  status: string
+  admissionDate: string
+  createdAt: string
+}
+
+export default function AnimaisPage() {
+  const { data: session, status } = useSession()
+  const [animals, setAnimals] = useState<Animal[]>([])
+  const [loading, setLoading] = useState(true)
+  const [editingAnimal, setEditingAnimal] = useState<Animal | null>(null)
+  const [formData, setFormData] = useState({
+    name: "",
+    species: "",
+    breed: "",
+    age: "",
+    gender: "",
+    status: ""
+  })
+
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      redirect("/auth/login")
+    }
+  }, [status])
+
+  useEffect(() => {
+    if (status === "authenticated") {
+      fetchAnimals()
+    }
+  }, [status])
+
+  const fetchAnimals = async () => {
+    try {
+      const response = await fetch("/api/animais")
+      const data = await response.json()
+      setAnimals(data)
+      setLoading(false)
+    } catch (error) {
+      console.error("Erro ao buscar animais:", error)
+      setLoading(false)
+    }
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    
+    try {
+      const payload = {
+        ...formData,
+        age: formData.age ? parseInt(formData.age) : null,
+        breed: formData.breed || null,
+        gender: formData.gender || null
+      }
+
+      if (editingAnimal) {
+        await fetch(`/api/animais/${editingAnimal.id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        })
+      } else {
+        await fetch("/api/animais", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        })
+      }
+
+      setEditingAnimal(null)
+      setFormData({
+        name: "",
+        species: "",
+        breed: "",
+        age: "",
+        gender: "",
+        status: ""
+      })
+      fetchAnimals()
+    } catch (error) {
+      console.error("Erro ao salvar animal:", error)
+      alert("Erro ao salvar animal")
+    }
+  }
+
+  const handleEdit = (animal: Animal) => {
+    setEditingAnimal(animal)
+    setFormData({
+      name: animal.name,
+      species: animal.species,
+      breed: animal.breed || "",
+      age: animal.age?.toString() || "",
+      gender: animal.gender || "",
+      status: animal.status
+    })
+  }
+
+  const handleDelete = async (id: string) => {
+    if (!confirm("Tem certeza que deseja excluir este animal?")) {
+      return
+    }
+
+    try {
+      await fetch(`/api/animais/${id}`, {
+        method: "DELETE"
+      })
+      fetchAnimals()
+    } catch (error) {
+      console.error("Erro ao deletar animal:", error)
+      alert("Erro ao deletar animal")
+    }
+  }
+
+  const handleCancel = () => {
+    setEditingAnimal(null)
+    setFormData({
+      name: "",
+      species: "",
+      breed: "",
+      age: "",
+      gender: "",
+      status: ""
+    })
+  }
+
+  if (status === "loading" || loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#FFE66D' }}>
+        <p className="text-gray-600">Carregando...</p>
+      </div>
+    )
+  }
+
+  if (!session || !session.user) {
+    return null
+  }
+
+  return (
+    <DashboardLayout>
+      <div className="bg-white rounded-lg shadow-sm p-6">
+        <div className="mb-6">
+          <h2 className="text-3xl font-semibold text-gray-900 mb-6">Animais</h2>
+        </div>
+
+        <div className="mb-6 bg-gray-50 rounded-lg p-6">
+          <h3 className="text-xl font-semibold text-gray-900 mb-4">
+            {editingAnimal ? "Editar Animal" : "Novo Animal"}
+          </h3>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <Input
+                  label="Nome *"
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  required
+                />
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Espécie *
+                  </label>
+                  <select
+                    value={formData.species}
+                    onChange={(e) => setFormData({ ...formData, species: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 text-gray-900"
+                    required
+                  >
+                    <option value="">Selecione...</option>
+                    <option value="cão">Cão</option>
+                    <option value="gato">Gato</option>
+                    <option value="outro">Outro</option>
+                  </select>
+                </div>
+                <Input
+                  label="Raça"
+                  value={formData.breed}
+                  onChange={(e) => setFormData({ ...formData, breed: e.target.value })}
+                />
+                <Input
+                  label="Idade"
+                  type="number"
+                  value={formData.age}
+                  onChange={(e) => setFormData({ ...formData, age: e.target.value })}
+                />
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Gênero
+                  </label>
+                  <select
+                    value={formData.gender}
+                    onChange={(e) => setFormData({ ...formData, gender: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 text-gray-900"
+                  >
+                    <option value="">Selecione...</option>
+                    <option value="macho">Macho</option>
+                    <option value="fêmea">Fêmea</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Status *
+                  </label>
+                  <select
+                    value={formData.status}
+                    onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 text-gray-900"
+                    required
+                  >
+                    <option value="">Selecione...</option>
+                    <option value="disponível">Disponível</option>
+                    <option value="adotado">Adotado</option>
+                    <option value="em tratamento">Em Tratamento</option>
+                  </select>
+                </div>
+              </div>
+              <div className="flex gap-3 justify-end w-85">
+                <Button type="submit" className="text-sm py-2 px-4">
+                  {editingAnimal ? "Salvar Alterações" : "Adicionar Animal"}
+                </Button>
+                <Button type="button" variant="secondary" onClick={handleCancel} className="text-sm py-2 px-4">
+                  Cancelar
+                </Button>
+              </div>
+            </form>
+          </div>
+
+        <div className="overflow-x-auto">
+          <table className="min-w-full bg-white border border-gray-200 rounded-lg">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">
+                  Nome
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">
+                  Espécie
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">
+                  Raça
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">
+                  Idade
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">
+                  Gênero
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">
+                  Status
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">
+                  Data de Admissão
+                </th>
+                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider border-b">
+                  Ações
+                </th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-200">
+              {animals.length === 0 ? (
+                <tr>
+                  <td colSpan={8} className="px-6 py-8 text-center text-gray-500">
+                    Nenhum animal cadastrado
+                  </td>
+                </tr>
+              ) : (
+                animals.map((animal) => (
+                  <tr key={animal.id} className="hover:bg-gray-50">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                      {animal.name}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600 capitalize">
+                      {animal.species}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                      {animal.breed || "-"}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                      {animal.age ? `${animal.age} anos` : "-"}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600 capitalize">
+                      {animal.gender || "-"}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className={`px-2 py-1 text-xs font-medium rounded-full ${
+                        animal.status === "disponível" 
+                          ? "bg-green-100 text-green-800"
+                          : animal.status === "adotado"
+                          ? "bg-blue-100 text-blue-800"
+                          : "bg-orange-100 text-orange-800"
+                      }`}>
+                        {animal.status}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                      {new Date(animal.admissionDate).toLocaleDateString('pt-BR')}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">
+                      <div className="flex gap-4 justify-center">
+                        <button
+                          onClick={() => handleEdit(animal)}
+                          className="text-teal-600 hover:text-teal-900"
+                        >
+                          Editar
+                        </button>
+                        <button
+                          onClick={() => handleDelete(animal.id)}
+                          className="text-red-600 hover:text-red-900"
+                        >
+                          Excluir
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </DashboardLayout>
+  )
+}
+
