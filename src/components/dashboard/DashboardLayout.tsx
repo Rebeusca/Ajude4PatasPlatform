@@ -25,9 +25,17 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   const pathname = usePathname()
 
   const handleLogout = async () => {
-    await signOut({ redirect: false })
-    router.push("/auth/login")
-    router.refresh()
+    try {
+      await signOut({ 
+        redirect: true,
+        callbackUrl: "/auth/login"
+      })
+    } catch (error) {
+      console.error("Erro ao fazer logout:", error)
+      // Fallback: redirecionar manualmente em caso de erro
+      router.push("/auth/login")
+      router.refresh()
+    }
   }
 
   return (
@@ -88,10 +96,8 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
           </div>
           <button
             onClick={handleLogout}
-            className="w-full px-4 py-2 text-white rounded-lg text-sm font-medium transition-colors"
+            className="w-full px-4 py-2 text-white rounded-lg text-sm font-medium transition-colors cursor-pointer hover:opacity-90"
             style={{ backgroundColor: '#0A8C87' }}
-            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#0A8C87'}
-            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#0A8C87'}
           >
             Sair
           </button>
