@@ -24,6 +24,7 @@ export default function AnimaisPage() {
   const [animals, setAnimals] = useState<Animal[]>([])
   const [loading, setLoading] = useState(true)
   const [editingAnimal, setEditingAnimal] = useState<Animal | null>(null)
+  const [searchTerm, setSearchTerm] = useState("")
   const [formData, setFormData] = useState({
     name: "",
     species: "",
@@ -150,6 +151,19 @@ export default function AnimaisPage() {
     return null
   }
 
+  // Filtrar animais baseado no termo de busca
+  const filteredAnimals = animals.filter((animal) => {
+    const search = searchTerm.toLowerCase()
+    return (
+      animal.name.toLowerCase().includes(search) ||
+      animal.species.toLowerCase().includes(search) ||
+      (animal.breed && animal.breed.toLowerCase().includes(search)) ||
+      animal.status.toLowerCase().includes(search) ||
+      (animal.gender && animal.gender.toLowerCase().includes(search)) ||
+      (animal.age && animal.age.toString().includes(search))
+    )
+  })
+
   return (
     <DashboardLayout>
       <div className="bg-white rounded-lg shadow-sm p-6">
@@ -260,6 +274,22 @@ export default function AnimaisPage() {
           </div>
         </div>
 
+        {/* Campo de Busca */}
+        <div className="mb-4">
+          <Input
+            label="Buscar animal"
+            placeholder="Digite o nome, espécie, raça, status..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="text-gray-900"
+          />
+          {searchTerm && (
+            <p className="mt-2 text-sm text-gray-600">
+              {filteredAnimals.length} {filteredAnimals.length === 1 ? 'animal encontrado' : 'animais encontrados'}
+            </p>
+          )}
+        </div>
+
         <div className="overflow-x-auto">
           <table className="min-w-full bg-white border border-gray-200 rounded-lg">
             <thead className="bg-gray-50">
@@ -291,14 +321,14 @@ export default function AnimaisPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
-              {animals.length === 0 ? (
+              {filteredAnimals.length === 0 ? (
                 <tr>
                   <td colSpan={8} className="px-6 py-8 text-center text-gray-500">
-                    Nenhum animal cadastrado
+                    {searchTerm ? 'Nenhum animal encontrado com o termo de busca' : 'Nenhum animal cadastrado'}
                   </td>
                 </tr>
               ) : (
-                animals.map((animal) => (
+                filteredAnimals.map((animal) => (
                   <tr key={animal.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                       {animal.name}
