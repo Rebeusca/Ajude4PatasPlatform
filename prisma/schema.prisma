@@ -34,44 +34,55 @@ model Animal {
 }
 
 model Adoption {
-  id          String   @id @default(cuid())
-  animalId    String
-  adopterName String
-  adopterEmail String?
-  adopterPhone String?
-  status      String   @default("em andamento") // "em andamento", "em acompanhamento", "finalizado"
-  adoptionDate DateTime @default(now())
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id               String   @id @default(cuid())
+  animalId         String
+  adopterName      String
+  adopterAddress   String?
+  adopterPhone     String?
+  adopterEmail     String?
+  adopterImageUrl  String?  // URL externa do adotante
+  volunteerInCharge String? // Voluntário responsável
+  adoptionDate     DateTime @default(now())
+  status           String   @default("finalizado") // "em adoção", "finalizado", etc
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
   
-  animal      Animal   @relation(fields: [animalId], references: [id], onDelete: Cascade)
+  animal           Animal   @relation(fields: [animalId], references: [id], onDelete: Cascade)
 }
 
 model Donation {
-  id          String   @id @default(cuid())
-  amount      Float
-  method      String   // "pix", "boleto", "cartão"
-  donorName   String?
-  donorEmail  String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id           String   @id @default(cuid())
+  donorName    String
+  product      String   
+  quantity     String   
+  donationDate DateTime @default(now())
+  observations String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 }
 
 model Volunteer {
-  id          String   @id @default(cuid())
-  name        String
-  email       String?
-  phone       String?
-  entryDate   DateTime @default(now())
-  isActive    Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id               String   @id @default(cuid())
+  name             String
+  age              Int?
+  imageUrl         String?  
+  entryDate        DateTime @default(now())
+  workArea         String   
+  schedule         String   
+  workedHours      Int      @default(0)
+  absenteeism      Float    @default(0)
+  isActive         Boolean  @default(true)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 }
 
 model VeterinaryHistory {
   id          String   @id @default(cuid())
   animalId    String
-  description String
+  doctor      String?  // Adicionado
+  cost        String?  // Adicionado (como String para aceitar R$)
+  illness     String?  // Adicionado
+  description String   // Aqui salvaremos as "observações gerais"
   date        DateTime @default(now())
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt

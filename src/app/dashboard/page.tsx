@@ -97,10 +97,10 @@ export default function DashboardPage() {
 }
 
 function AnimalsAdmittedCard({ stats }: { stats: DashboardStats }) {
-  const total = stats.animalsAdmitted
-  const caes = stats.animalsBySpecies['cão'] || stats.animalsBySpecies['cães'] || 0
-  const gatos = stats.animalsBySpecies['gato'] || stats.animalsBySpecies['gatos'] || 0
-  const outros = stats.animalsBySpecies['outro'] || stats.animalsBySpecies['outros'] || 0
+  const total = stats?.animalsAdmitted || 0
+  const caes = stats?.animalsBySpecies?.['cão'] || stats?.animalsBySpecies?.['cães'] || 0
+  const gatos = stats?.animalsBySpecies?.['gato'] || stats?.animalsBySpecies?.['gatos'] || 0
+  const outros = stats?.animalsBySpecies?.['outro'] || stats?.animalsBySpecies?.['outros'] || 0
   const totalSpecies = caes + gatos + outros || 1
 
   const caesPercent = totalSpecies > 0 ? (caes / totalSpecies) * 100 : 0
@@ -154,11 +154,11 @@ function AnimalsAdmittedCard({ stats }: { stats: DashboardStats }) {
 }
 
 function AnimalsAdoptedCard({ stats }: { stats: DashboardStats }) {
-  const total = stats.adoptionsCount
-  const caes = stats.adoptionsBySpecies['cão'] || stats.adoptionsBySpecies['cães'] || 0
-  const gatos = stats.adoptionsBySpecies['gato'] || stats.adoptionsBySpecies['gatos'] || 0
-  const outros = stats.adoptionsBySpecies['outro'] || stats.adoptionsBySpecies['outros'] || 0
-  const totalSpecies = caes + gatos + outros || 1
+  const total = stats?.adoptionsCount || 0
+  const caes = stats?.adoptionsBySpecies?.['cão'] || stats?.adoptionsBySpecies?.['cães'] || 0
+  const gatos = stats?.adoptionsBySpecies?.['gato'] || stats?.adoptionsBySpecies?.['gatos'] || 0
+  const outros = stats?.adoptionsBySpecies?.['outro'] || stats?.adoptionsBySpecies?.['outros'] || 0
+  const totalSpecies = (caes + gatos + outros) || 1
 
   const caesPercent = totalSpecies > 0 ? (caes / totalSpecies) * 100 : 0
   const gatosPercent = totalSpecies > 0 ? (gatos / totalSpecies) * 100 : 0
@@ -211,17 +211,19 @@ function AnimalsAdoptedCard({ stats }: { stats: DashboardStats }) {
 }
 
 function DonationsCard({ stats }: { stats: DashboardStats }) {
-  const total = stats.donationsCount
-  const pix = stats.donationsByMethod['pix']?.count || 0
-  const boleto = stats.donationsByMethod['boleto']?.count || 0
-  const cartao = stats.donationsByMethod['cartão'] || stats.donationsByMethod['cartao'] || { count: 0 }
-  const totalMethods = pix + boleto + cartao.count || 1
+  const total = stats?.donationsCount || 0
+  const pix = stats?.donationsByMethod?.['pix']?.count || 0
+  const boleto = stats?.donationsByMethod?.['boleto']?.count || 0
+  const cartao = stats?.donationsByMethod?.['cartão'] || stats?.donationsByMethod?.['cartao'] || { count: 0, total: 0 }
+  
+  const totalMethods = (pix + boleto + cartao.count) || 1
   
   const pixPercent = (pix / totalMethods) * 100
   const boletoPercent = (boleto / totalMethods) * 100
   const cartaoPercent = (cartao.count / totalMethods) * 100
-  const pixTotal = stats.donationsByMethod['pix']?.total || 0
-  const boletoTotal = stats.donationsByMethod['boleto']?.total || 0
+
+  const pixTotal = stats?.donationsByMethod?.['pix']?.total || 0
+  const boletoTotal = stats?.donationsByMethod?.['boleto']?.total || 0
   const cartaoTotal = cartao.total || 0
 
   return (
@@ -318,10 +320,10 @@ function DonationsCard({ stats }: { stats: DashboardStats }) {
 }
 
 function AdoptionsOverviewCard({ stats }: { stats: DashboardStats }) {
-  const finalizados = stats.adoptionsByStatus['finalizado'] || stats.adoptionsByStatus['finalizados'] || 0
-  const acompanhamento = stats.adoptionsByStatus['em acompanhamento'] || 0
-  const andamento = stats.adoptionsByStatus['em andamento'] || 0
-  const total = finalizados + acompanhamento + andamento || 1
+  const finalizados = stats?.adoptionsByStatus?.['finalizado'] || stats?.adoptionsByStatus?.['finalizados'] || 0
+  const acompanhamento = stats?.adoptionsByStatus?.['em acompanhamento'] || 0
+  const andamento = stats?.adoptionsByStatus?.['em andamento'] || 0
+  const total = (finalizados + acompanhamento + andamento) || 1
 
   const finalizadosPercent = (finalizados / total) * 100
   const acompanhamentoPercent = (acompanhamento / total) * 100
@@ -421,7 +423,9 @@ function AdoptionsOverviewCard({ stats }: { stats: DashboardStats }) {
 }
 
 function TotalBalanceCard({ stats }: { stats: DashboardStats }) {
-  const balance = stats.totalBalance.toLocaleString('pt-BR', {
+  const balanceValue = stats?.totalBalance ?? 0;
+  
+  const balance = balanceValue.toLocaleString('pt-BR', {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
   })
@@ -439,14 +443,15 @@ function TotalBalanceCard({ stats }: { stats: DashboardStats }) {
 }
 
 function MovementsOverviewCard({ stats }: { stats: DashboardStats }) {
-  const maxValue = Math.max(...stats.monthlyMovements.map(m => m.value), 1)
-  const total = stats.monthlyMovements.reduce((sum, m) => sum + m.value, 0)
+  const movements = stats?.monthlyMovements || [];
+  const maxValue = movements.length > 0 ? Math.max(...movements.map(m => m.value)) : 1;
+  const total = movements.reduce((sum, m) => sum + m.value, 0);
   
   return (
     <div className="bg-white rounded-lg shadow-lg p-6 lg:col-span-2">
       <h3 className="text-sm font-medium text-gray-600 mb-4">visão geral de movimentações</h3>
       <div className="h-64 flex items-end justify-between gap-2">
-        {stats.monthlyMovements.map((movement) => {
+        {movements.map((movement) => {
           const height = maxValue > 0 ? (movement.value / maxValue) * 100 : 0
           const percent = total > 0 ? (movement.value / total) * 100 : 0
           return (
@@ -472,15 +477,18 @@ function MovementsOverviewCard({ stats }: { stats: DashboardStats }) {
 }
 
 function ActiveVolunteersCard({ stats }: { stats: DashboardStats }) {
+  const volunteers = stats?.activeVolunteers || [];
+
   return (
     <div className="bg-white rounded-lg shadow-lg p-6 min-h-[300px] flex flex-col">
       <p className="text-3xl font-bold text-gray-900 mb-1">voluntários ativos</p>
-      {stats.activeVolunteers.length > 0 ? (
+      
+      {volunteers.length > 0 ? (
         <div className="space-y-3">
-          {stats.activeVolunteers.map((volunteer, index) => (
+          {volunteers.map((volunteer, index) => (
             <div key={index} className="flex items-center gap-3">
               <div className="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center">
-                <span className="text-xs text-gray-600">{volunteer.name.charAt(0)}</span>
+                <span className="text-xs text-gray-600">{volunteer.name?.charAt(0) || 'V'}</span>
               </div>
               <div className="flex-1">
                 <p className="text-sm font-medium text-gray-900">{volunteer.name}</p>
