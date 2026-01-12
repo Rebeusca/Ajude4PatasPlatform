@@ -25,6 +25,7 @@ model Animal {
   age         Int?
   gender      String?  // "macho", "fêmea"
   status      String   @default("disponível") // "disponível", "adotado", "em tratamento"
+  imageUrl    String?  // URL da foto do animal
   admissionDate DateTime @default(now())
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt

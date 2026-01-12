@@ -35,7 +35,7 @@ export async function PUT(
   try {
     const { id } = await params
     const body = await request.json()
-    const { name, species, breed, age, gender, status } = body
+    const { name, species, breed, age, gender, status, imageUrl } = body
 
     if (!name || !species) {
       return NextResponse.json(
@@ -65,10 +65,11 @@ export async function PUT(
       data: {
         name,
         species,
-        breed: breed || null,
+        breed: breed?.trim() || null,
         age: age ? parseInt(age) : null,
         gender: gender || null,
-        status: status || "disponível"
+        status: status || "disponível",
+        imageUrl: imageUrl?.trim() || null
       }
     })
 

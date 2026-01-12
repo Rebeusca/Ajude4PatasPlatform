@@ -69,7 +69,7 @@ export async function GET() {
       }
     })
 
-    // Distribuição por método de pagamento
+    // Distribuição por produto (substituindo método de pagamento)
     const donationsList = await prisma.donation.findMany({
       where: {
         createdAt: {
@@ -77,17 +77,16 @@ export async function GET() {
         }
       },
       select: {
-        method: true,
-        amount: true
+        product: true
       }
     })
 
     const donationsByMethod = donationsList.reduce((acc, donation) => {
-      if (!acc[donation.method]) {
-        acc[donation.method] = { count: 0, total: 0 }
+      const product = donation.product || 'Outro'
+      if (!acc[product]) {
+        acc[product] = { count: 0, total: 0 }
       }
-      acc[donation.method].count += 1
-      acc[donation.method].total += donation.amount
+      acc[product].count += 1
       return acc
     }, {} as Record<string, { count: number; total: number }>)
 
@@ -108,22 +107,14 @@ export async function GET() {
       return acc
     }, {} as Record<string, number>)
 
-    // Saldo total em caixa
-    const totalBalance = await prisma.donation.aggregate({
-      _sum: {
-        amount: true
-      }
-    })
-
-    // Movimentações mensais (últimos 12 meses)
-    const monthlyMovements = await prisma.donation.findMany({
+    // Movimentações mensais (últimos 12 meses) - contagem de doações por mês
+    const monthlyMovementsList = await prisma.donation.findMany({
       where: {
         createdAt: {
           gte: new Date(new Date().setMonth(new Date().getMonth() - 12))
         }
       },
       select: {
-        amount: true,
         createdAt: true
       }
     })
@@ -146,16 +137,16 @@ export async function GET() {
       const monthStart = new Date(date.getFullYear(), date.getMonth(), 1)
       const monthEnd = new Date(date.getFullYear(), date.getMonth() + 1, 0)
       
-      const monthMovements = monthlyMovements.filter(d => {
+      const monthMovements = monthlyMovementsList.filter(d => {
         const dDate = new Date(d.createdAt)
         return dDate >= monthStart && dDate <= monthEnd
       })
       
-      const total = monthMovements.reduce((sum, d) => sum + d.amount, 0)
+      const count = monthMovements.length
       
       return {
         month: date.toLocaleDateString('pt-BR', { month: 'short' }),
-        value: total
+        value: count
       }
     })
 
@@ -167,7 +158,6 @@ export async function GET() {
       donationsCount,
       donationsByMethod,
       adoptionsByStatus,
-      totalBalance: totalBalance._sum.amount || 0,
       monthlyMovements: monthlyData,
       activeVolunteers: activeVolunteers.map(v => ({
         name: v.name,
