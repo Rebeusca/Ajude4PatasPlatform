@@ -47,9 +47,6 @@ export function Header() {
           <Link className={navLinkPaths("/sobre", pathname)} href="/sobre">
             Sobre nós
           </Link>
-          <Link className={navLinkPaths("/ajudar", pathname)} href="/ajudar">
-            Como ajudar
-          </Link>
         </nav>
 
         <button
@@ -130,10 +127,6 @@ export function Header() {
 
           <Link onClick={toggleMenu} className={mobileLinkStyle} href="/sobre">
             Sobre nós
-          </Link>
-
-          <Link onClick={toggleMenu} className={mobileLinkStyle} href="/ajudar">
-            Como ajudar
           </Link>
         </nav>
       </div>
