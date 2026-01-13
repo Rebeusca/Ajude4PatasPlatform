@@ -15,6 +15,7 @@ interface Animal {
   age: number | null
   gender: string | null
   status: string
+  imageUrl: string | null
   admissionDate: string
   createdAt: string
 }
@@ -31,7 +32,8 @@ export default function AnimaisPage() {
     breed: "",
     age: "",
     gender: "",
-    status: ""
+    status: "",
+    imageUrl: ""
   })
 
   useEffect(() => {
@@ -62,25 +64,40 @@ export default function AnimaisPage() {
     e.preventDefault()
     
     try {
+      const imageUrlValue = formData.imageUrl?.trim() || null
+      
       const payload = {
-        ...formData,
+        name: formData.name,
+        species: formData.species,
+        breed: formData.breed?.trim() || null,
         age: formData.age ? parseInt(formData.age) : null,
-        breed: formData.breed || null,
-        gender: formData.gender || null
+        gender: formData.gender || null,
+        status: formData.status,
+        imageUrl: imageUrlValue
       }
 
       if (editingAnimal) {
-        await fetch(`/api/animais/${editingAnimal.id}`, {
+        const response = await fetch(`/api/animais/${editingAnimal.id}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload)
         })
+        
+        if (!response.ok) {
+          const errorData = await response.json()
+          throw new Error(errorData.error || "Erro ao atualizar animal")
+        }
       } else {
-        await fetch("/api/animais", {
+        const response = await fetch("/api/animais", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload)
         })
+        
+        if (!response.ok) {
+          const errorData = await response.json()
+          throw new Error(errorData.error || "Erro ao criar animal")
+        }
       }
 
       setEditingAnimal(null)
@@ -90,7 +107,8 @@ export default function AnimaisPage() {
         breed: "",
         age: "",
         gender: "",
-        status: ""
+        status: "",
+        imageUrl: ""
       })
       fetchAnimals()
     } catch (error) {
@@ -107,7 +125,8 @@ export default function AnimaisPage() {
       breed: animal.breed || "",
       age: animal.age?.toString() || "",
       gender: animal.gender || "",
-      status: animal.status
+      status: animal.status,
+      imageUrl: animal.imageUrl || ""
     })
   }
 
@@ -135,7 +154,8 @@ export default function AnimaisPage() {
       breed: "",
       age: "",
       gender: "",
-      status: ""
+      status: "",
+      imageUrl: ""
     })
   }
 
@@ -186,7 +206,7 @@ export default function AnimaisPage() {
                   <select
                     value={formData.species}
                     onChange={(e) => setFormData({ ...formData, species: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 text-gray-900"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-gray-900 transition-colors"
                     required
                   >
                     <option value="">Selecione...</option>
@@ -213,7 +233,7 @@ export default function AnimaisPage() {
                   <select
                     value={formData.gender}
                     onChange={(e) => setFormData({ ...formData, gender: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 text-gray-900"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-gray-900 transition-colors"
                   >
                     <option value="">Selecione...</option>
                     <option value="macho">Macho</option>
@@ -227,7 +247,7 @@ export default function AnimaisPage() {
                   <select
                     value={formData.status}
                     onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 text-gray-900"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-gray-900 transition-colors"
                     required
                   >
                     <option value="">Selecione...</option>
@@ -235,6 +255,14 @@ export default function AnimaisPage() {
                     <option value="adotado">Adotado</option>
                     <option value="em tratamento">Em Tratamento</option>
                   </select>
+                </div>
+                <div className="md:col-span-2">
+                  <Input
+                    label="URL da Foto"
+                    value={formData.imageUrl}
+                    onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
+                    placeholder="https://exemplo.com/foto.jpg"
+                  />
                 </div>
               </div>
               <div className="flex gap-3 justify-end w-85">
@@ -295,6 +323,9 @@ export default function AnimaisPage() {
             <thead className="bg-gray-50">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">
+                  Foto
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">
                   Nome
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">
@@ -323,13 +354,29 @@ export default function AnimaisPage() {
             <tbody className="divide-y divide-gray-200">
               {filteredAnimals.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="px-6 py-8 text-center text-gray-500">
+                  <td colSpan={9} className="px-6 py-8 text-center text-gray-500">
                     {searchTerm ? 'Nenhum animal encontrado com o termo de busca' : 'Nenhum animal cadastrado'}
                   </td>
                 </tr>
               ) : (
                 filteredAnimals.map((animal) => (
                   <tr key={animal.id} className="hover:bg-gray-50">
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      {animal.imageUrl ? (
+                        <img 
+                          src={animal.imageUrl} 
+                          alt={animal.name}
+                          className="w-16 h-16 object-cover rounded-full"
+                          onError={(e) => {
+                            e.currentTarget.src = 'https://via.placeholder.com/64?text=Sem+Foto'
+                          }}
+                        />
+                      ) : (
+                        <div className="w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center text-gray-400 text-xs text-center">
+                          Sem Foto
+                        </div>
+                      )}
+                    </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                       {animal.name}
                     </td>

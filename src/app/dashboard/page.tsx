@@ -13,7 +13,6 @@ interface DashboardStats {
   donationsCount: number
   donationsByMethod: Record<string, { count: number; total: number }>
   adoptionsByStatus: Record<string, number>
-  totalBalance: number
   monthlyMovements: Array<{ month: string; value: number }>
   activeVolunteers: Array<{ name: string; date: string }>
 }
@@ -82,13 +81,8 @@ export default function DashboardPage() {
             <DonationsCard stats={stats} />
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <TotalBalanceCard stats={stats} />
+          <div className="grid grid-cols-1 lg:grid-cols-1 gap-6">
             <ActiveVolunteersCard stats={stats} />
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <MovementsOverviewCard stats={stats} />
           </div>
         </div>
       </div>
@@ -417,60 +411,6 @@ function AdoptionsOverviewCard({ stats }: { stats: DashboardStats }) {
             {andamento} adoções ({Math.round(andamentoPercent)}%)
           </div>
         </div>
-      </div>
-    </div>
-  )
-}
-
-function TotalBalanceCard({ stats }: { stats: DashboardStats }) {
-  const balanceValue = stats?.totalBalance ?? 0;
-  
-  const balance = balanceValue.toLocaleString('pt-BR', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2
-  })
-
-  return (
-    <div className="bg-white rounded-lg shadow-lg p-6 flex items-center justify-center min-h-[300px]">
-      <div className="text-center">
-        <p className="text-3xl font-bold text-gray-900 mb-1">saldo total em caixa</p>
-        <p className="text-sm text-gray-500 mb-10">desde o último mês</p>
-        <p className="text-5xl font-bold text-gray-900">{balance}</p>
-        <p className="text-sm text-gray-500 mt-2">reais</p>
-      </div>
-    </div>
-  )
-}
-
-function MovementsOverviewCard({ stats }: { stats: DashboardStats }) {
-  const movements = stats?.monthlyMovements || [];
-  const maxValue = movements.length > 0 ? Math.max(...movements.map(m => m.value)) : 1;
-  const total = movements.reduce((sum, m) => sum + m.value, 0);
-  
-  return (
-    <div className="bg-white rounded-lg shadow-lg p-6 lg:col-span-2">
-      <h3 className="text-sm font-medium text-gray-600 mb-4">visão geral de movimentações</h3>
-      <div className="h-64 flex items-end justify-between gap-2">
-        {movements.map((movement) => {
-          const height = maxValue > 0 ? (movement.value / maxValue) * 100 : 0
-          const percent = total > 0 ? (movement.value / total) * 100 : 0
-          return (
-            <div key={movement.month} className="flex-1 flex flex-col items-center relative group">
-              <div 
-                className="w-full rounded-t cursor-pointer hover:opacity-80 transition-opacity" 
-                style={{ 
-                  backgroundColor: '#0DB2AC', 
-                  height: `${Math.max(height, 5)}%`,
-                  minHeight: '5px'
-                }}
-              ></div>
-              <span className="text-xs text-gray-500 mt-2">{movement.month}</span>
-              <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 hidden group-hover:block bg-gray-900 text-white text-xs rounded py-1 px-2 whitespace-nowrap z-10">
-                R$ {movement.value.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ({Math.round(percent)}%)
-              </div>
-        </div>
-          )
-        })}
       </div>
     </div>
   )
