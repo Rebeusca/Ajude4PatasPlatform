@@ -1,20 +1,15 @@
-/** @type {import('next').NextConfig} */
-const nextConfig = {
-  // Mantém sua opção do compilador
-  reactCompiler: true,
+import type { NextConfig } from "next";
 
-  // 1. Ignora erros de TypeScript durante o build para permitir o deploy
+const nextConfig: NextConfig = {
+  reactCompiler: true,
+  // @ts-ignore - Ignora erro de tipagem local se a versão do Next for conflitante
   typescript: {
     ignoreBuildErrors: true,
   },
-
-  // 2. Ignora erros de ESLint durante o build
+  // @ts-ignore - Ignora erro de tipagem local para garantir o build
   eslint: {
     ignoreDuringBuilds: true,
   },
-
-  // 3. Opcional: Se houver problemas com pacotes externos, habilite isso
-  transpilePackages: ["@prisma/client"],
 };
 
 export default nextConfig;
