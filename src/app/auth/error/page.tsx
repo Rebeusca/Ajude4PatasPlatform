@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/Button"
 import Link from "next/link"
 import { Suspense } from "react"
 
+export const dynamic = "force-dynamic";
+
 // Componente 1: A lógica (Onde o hook é usado)
 function AuthErrorContent() {
   const searchParams = useSearchParams()
