@@ -5,6 +5,9 @@ Plataforma de gestão para organização de proteção animal construída com [N
 ## Link para o protótipo no Figma
 [Clique aqui!](https://www.figma.com/design/D9uCFo0CADMslKdtVY9zQN/Projeto-ES?node-id=0-1&t=SwOIbVeGU096DxZo-1)
 
+## Link para a documentação de requisitos + diagramas UML
+[Clique aqui!](https://drive.google.com/file/d/13OrSkV1TzyvHop4QFn6Zjt1SNgwiwW9p/view?usp=sharing)
+
 ## Pré-requisitos
 
 - Node.js 18+ instalado
