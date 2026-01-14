@@ -5,7 +5,7 @@ import { useSession, signOut } from "next-auth/react"
 import { useRouter, usePathname } from "next/navigation"
 import Image from "next/image"
 import Link from "next/link"
-import { Home, PawPrint, HeartPulse, Users, HeartHandshake, Heart, Menu, X } from "lucide-react"
+import { Home, PawPrint, HeartPulse, Users, HeartHandshake, Heart, Menu, X, User, FileUser } from "lucide-react"
 
 interface DashboardLayoutProps {
   children: React.ReactNode
@@ -18,6 +18,7 @@ const navigationItems = [
   { name: "voluntários", href: "/dashboard/voluntarios", icon: Users },
   { name: "doações", href: "/dashboard/doacoes", icon: HeartHandshake },
   { name: "adoções", href: "/dashboard/adocoes", icon: Heart },
+  { name: "adotante", href: "/dashboard/adotante", icon: FileUser },
 ]
 
 export function DashboardLayout({ children }: DashboardLayoutProps) {

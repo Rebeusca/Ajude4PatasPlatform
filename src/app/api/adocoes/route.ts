@@ -5,7 +5,8 @@ export async function GET() {
   try {
     const adoptions = await prisma.adoption.findMany({
       include: {
-        animal: true 
+        animal: true, 
+        adopter: true
       },
       orderBy: { adoptionDate: 'desc' }
     })
@@ -21,24 +22,18 @@ export async function POST(request: Request) {
     const body = await request.json()
     const { 
       animalId, 
-      adopterName, 
-      adopterAddress, 
-      adopterPhone, 
-      adopterEmail, 
-      adopterImageUrl, 
-      volunteerInCharge,
+      adopterId,
+      adoptionDate,
+      observations,
       status 
     } = body
 
     const adoption = await prisma.adoption.create({
       data: {
         animalId,
-        adopterName,
-        adopterAddress,
-        adopterPhone,
-        adopterEmail,
-        adopterImageUrl,
-        volunteerInCharge,
+        adopterId,
+        adoptionDate: new Date(adoptionDate),
+        observations: observations || null,
         status: status || "finalizado"
       },
       include: { animal: true }

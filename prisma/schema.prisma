@@ -37,19 +37,37 @@ model Animal {
 model Adoption {
   id               String   @id @default(cuid())
   animalId         String
-  adopterName      String
-  adopterAddress   String?
-  adopterPhone     String?
-  adopterEmail     String?
-  adopterImageUrl  String?  // URL externa do adotante
-  volunteerInCharge String? // Voluntário responsável
-  adoptionDate     DateTime @default(now())
-  status           String   @default("finalizado") // "em adoção", "finalizado", etc
+  adopterId        String
+  adoptionDate     DateTime
+  observations     String?
+  status           String   @default("em adaptação") // "em adoção", "finalizado", etc
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
   
   animal           Animal   @relation(fields: [animalId], references: [id], onDelete: Cascade)
+  adopter          Adopter  @relation(fields: [adopterId], references: [id], onDelete: Cascade)
 }
+
+model Adopter {
+  id           String   @id @default(cuid())
+  name         String
+  address      String
+  addressNum   String
+  zipCode      String 
+  neighborhood String  
+  city         String
+  state        String
+  phone        String   
+  email        String?
+  observations String @default("Nenhuma observação adicionada.")   
+  birthDate    DateTime
+  imageUrl     String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  
+  adoptions    Adoption[] // Added to establish the opposite relation
+}
+
 
 model Donation {
   id           String   @id @default(cuid())

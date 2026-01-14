@@ -83,8 +83,9 @@ export async function PUT(
         await prisma.adoption.create({
           data: {
             animalId: id,
-            adopterName: "Adotador não informado",
-            status: "finalizado"
+            adopterId: "Adotador não informado",
+            status: "finalizado",
+            adoptionDate: new Date()
           }
         })
       }
