@@ -9,7 +9,7 @@ const nextConfig: NextConfig = {
   // @ts-ignore - Ignora erro de tipagem local para garantir o build
   eslint: {
     ignoreDuringBuilds: true,
-  },
+  } as any,
 };
 
 export default nextConfig;
