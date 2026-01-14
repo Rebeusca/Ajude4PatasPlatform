@@ -101,7 +101,7 @@ export default function DoacoesPage() {
                   <td className="py-4 font-bold">{d.donorName}</td>
                   <td className="py-4">{d.product}</td>
                   <td className="py-4 text-center">{d.quantity}</td>
-                  <td className="py-4">{new Date(d.donationDate).toLocaleDateString('pt-BR')}</td>
+                  <td className="py-4">{new Date(d.donationDate).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}</td>
                 </tr>
               ))}
             </tbody>

@@ -186,7 +186,7 @@ export default function VeterinarioPage() {
                       <td className="py-4">{item.doctor || "Não informado"}</td>
                       <td className="py-4 text-gray-500 max-w-xs truncate">{item.description || "Consulta"}</td>
                       <td className="py-4 text-gray-400">
-                        {item.date ? new Date(item.date).toLocaleDateString('pt-BR') : "--"}
+                        {item.date ? new Date(item.date).toLocaleDateString('pt-BR', { timeZone: 'UTC' }) : "--"}
                       </td>
                       <td className="py-4">
                         <span className={item.illness ? "text-red-500 font-medium" : "text-gray-400"}>

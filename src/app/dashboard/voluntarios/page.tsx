@@ -100,7 +100,7 @@ export default function VoluntariosPage() {
                   <h3 className="text-lg font-bold text-gray-900">{v.name}</h3>
                   <div className="w-full mt-4 space-y-1 text-[11px] text-gray-600">
                     <p><strong>idade:</strong> {v.age} anos</p>
-                    <p><strong>data de entrada:</strong> {v.entryDate ? new Date(v.entryDate).toLocaleDateString() : '--'}</p>
+                    <p><strong>data de entrada:</strong> {v.entryDate ? new Date(v.entryDate).toLocaleDateString('pt-BR', { timeZone: 'UTC' }) : '--'}</p>
                     <p><strong>área de atuação:</strong> {v.workArea}</p>
                     <p><strong>horário de atuação:</strong> {v.schedule}</p>
                   </div>
