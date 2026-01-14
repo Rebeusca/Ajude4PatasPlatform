@@ -4,8 +4,17 @@ import { useSearchParams } from "next/navigation"
 import Image from "next/image"
 import { Button } from "@/components/ui/Button"
 import Link from "next/link"
+import { Suspense } from "react" 
 
 export default function AuthErrorPage() {
+  return (
+    <Suspense fallback={null}> 
+      <AuthErrorContent />
+    </Suspense>
+  )
+}
+
+function AuthErrorContent() {
   const searchParams = useSearchParams()
   const error = searchParams.get("error")
 
@@ -51,4 +60,3 @@ export default function AuthErrorPage() {
     </div>
   )
 }
-
