@@ -2,6 +2,9 @@
 
 Plataforma de gestão para organização de proteção animal construída com [Next.js](https://nextjs.org), [NextAuth.js](https://next-auth.js.org), [Prisma](https://www.prisma.io) e [PostgreSQL](https://www.postgresql.org).
 
+## Link para o protótipo no Figma
+[Clique aqui!](https://www.figma.com/design/D9uCFo0CADMslKdtVY9zQN/Projeto-ES?node-id=0-1&t=SwOIbVeGU096DxZo-1)
+
 ## Pré-requisitos
 
 - Node.js 18+ instalado
