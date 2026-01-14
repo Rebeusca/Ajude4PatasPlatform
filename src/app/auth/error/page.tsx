@@ -6,9 +6,9 @@ import { Button } from "@/components/ui/Button"
 import Link from "next/link"
 import { Suspense } from "react"
 
+// Força o Next.js a tratar a página como dinâmica, ignorando erros de build estático
 export const dynamic = "force-dynamic";
 
-// Componente 1: A lógica (Onde o hook é usado)
 function AuthErrorContent() {
   const searchParams = useSearchParams()
   const error = searchParams.get("error")
@@ -43,10 +43,9 @@ function AuthErrorContent() {
   )
 }
 
-// Componente 2: O Export principal (Onde o Suspense envolve a lógica)
 export default function AuthErrorPage() {
   return (
-    <Suspense fallback={null}>
+    <Suspense fallback={<div>Carregando...</div>}>
       <AuthErrorContent />
     </Suspense>
   )
