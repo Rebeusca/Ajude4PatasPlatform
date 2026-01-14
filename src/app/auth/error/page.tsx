@@ -6,9 +6,6 @@ import { Button } from "@/components/ui/Button"
 import Link from "next/link"
 import { Suspense } from "react"
 
-// Força o Next.js a tratar a página como dinâmica, ignorando erros de build estático
-export const dynamic = "force-dynamic";
-
 function AuthErrorContent() {
   const searchParams = useSearchParams()
   const error = searchParams.get("error")
@@ -24,28 +21,52 @@ function AuthErrorContent() {
   const errorMessage = errorMessages[error || ""] || errorMessages.Default
 
   return (
-    <div className="min-h-screen bg-[#FFFDD0] relative overflow-hidden flex items-center justify-center px-4">
-      <div className="w-full max-w-md relative z-10">
-        <div className="flex justify-center mb-8">
-          <Image src="/logo.png" alt="Logo" width={120} height={120} />
+    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#FFFDD0] px-4">
+      <div className="relative z-10 w-full max-w-md">
+        <div className="mb-8 flex justify-center">
+          <Image 
+            src="/logo.png" 
+            alt="Logo" 
+            width={120} 
+            height={120} 
+          />
         </div>
-        <div className="bg-white rounded-2xl shadow-xl p-8 text-center">
-          <div className="text-6xl mb-4">⚠️</div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">Erro na Autenticação</h1>
-          <p className="text-gray-600 mb-6">{errorMessage}</p>
+
+        <div className="rounded-2xl bg-white p-8 text-center shadow-xl">
+          <div className="mb-4 text-6xl">⚠️</div>
+          <h1 className="mb-4 text-2xl font-bold text-gray-900">
+            Erro na Autenticação
+          </h1>
+          <p className="mb-6 text-gray-600">
+            {errorMessage}
+          </p>
+
           <Link href="/auth/login">
-            <Button className="w-full">Voltar para o Login</Button>
+            <Button className="w-full">
+              Voltar para o Login
+            </Button>
           </Link>
         </div>
       </div>
-      <Image src="/dog-background-login.png" alt="Dog" width={850} height={850} className="absolute bottom-0 right-0 opacity-30" />
+
+      <Image
+        src="/dog-background-login.png"
+        alt="Dog"
+        width={850}
+        height={850}
+        className="absolute bottom-0 right-0 opacity-30"
+      />
+      
     </div>
   )
 }
-
 export default function AuthErrorPage() {
   return (
-    <Suspense fallback={<div>Carregando...</div>}>
+    <Suspense fallback={
+      <div className="min-h-screen bg-[#FFFDD0] flex items-center justify-center">
+        <div className="text-teal-400 text-lg">Carregando...</div>
+      </div>
+    }>
       <AuthErrorContent />
     </Suspense>
   )
