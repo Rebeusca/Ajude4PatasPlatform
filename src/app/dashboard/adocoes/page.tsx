@@ -35,10 +35,18 @@ interface Adoption {
   }
 }
 
+interface Animal {
+  id: string
+  name: string
+  species: string
+  status: string
+  imageUrl: string | null
+}
+
 export default function AdocoesPage() {
   const { data: session, status } = useSession()
   const [adoptions, setAdoptions] = useState<Adoption[]>([])
-  const [animals, setAnimals] = useState([])
+  const [animals, setAnimals] = useState<Animal[]>([])
   const [loading, setLoading] = useState(true)
   const [showInfo, setShowInfo] = useState(false)
   const [searchTerm, setSearchTerm] = useState("")
@@ -78,11 +86,27 @@ export default function AdocoesPage() {
       const data = await resAdocoes.json()
       const animaisData = await resAnimais.json()
       
-      setAdoptions(data)
-      setAnimals(animaisData)
+      // Garantir que data seja sempre um array
+      if (Array.isArray(data)) {
+        setAdoptions(data)
+      } else {
+        console.error("Resposta da API não é um array:", data)
+        setAdoptions([])
+      }
+      
+      // Garantir que animaisData seja sempre um array
+      if (Array.isArray(animaisData)) {
+        setAnimals(animaisData)
+      } else {
+        console.error("Resposta da API de animais não é um array:", animaisData)
+        setAnimals([])
+      }
+      
       setLoading(false)
     } catch (error) {
       console.error("Erro ao buscar dados:", error)
+      setAdoptions([])
+      setAnimals([])
       setLoading(false)
     }
   }
@@ -177,14 +201,16 @@ export default function AdocoesPage() {
     })
   }
 
-const filteredAdoptions = adoptions.filter(a => {
-  // O uso de ?. evita o erro "cannot access property name of undefined"
-  const adopterName = a.adopter?.name?.toLowerCase() || "";
-  const animalName = a.animal?.name?.toLowerCase() || "";
-  const search = searchTerm.toLowerCase();
-  
-  return adopterName.includes(search) || animalName.includes(search);
-});
+const filteredAdoptions = Array.isArray(adoptions) 
+  ? adoptions.filter(a => {
+      // O uso de ?. evita o erro "cannot access property name of undefined"
+      const adopterName = a.adopter?.name?.toLowerCase() || "";
+      const animalName = a.animal?.name?.toLowerCase() || "";
+      const search = searchTerm.toLowerCase();
+      
+      return adopterName.includes(search) || animalName.includes(search);
+    })
+  : [];
 
   return (
     <DashboardLayout>
