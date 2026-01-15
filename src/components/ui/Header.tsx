@@ -2,20 +2,57 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
 
-function navLinkPaths(path: string, current: string) {
-  const base = "transition-colors hover:text-secondary hover:text-lg ";
-
-  const ativo = "text-secondary text-lg";
-  const inativo = "text-primary";
-
-  return `${base} ${current === path ? ativo : inativo}`;
-}
 
 export function Header() {
   const pathname = usePathname();
+  const router = useRouter();
+  const [activeSection, setActiveSection] = useState("home");
+  
+  const isSpecialPage = pathname.startsWith("/auth") || pathname.startsWith("/pets/");
+
+  useEffect(() => {
+    if (isSpecialPage) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setActiveSection(entry.target.id);
+          }
+        });
+      },
+      { threshold: 0.5 }
+    );
+
+    const sections = document.querySelectorAll("section[id]");
+    sections.forEach((section) => observer.observe(section));
+
+    return () => observer.disconnect();
+  }, [isSpecialPage]);
+
+  function navLinkPaths(sectionId: string) {
+    const base = "transition-colors hover:text-secondary hover:text-lg cursor-pointer ";
+    const ativo = "text-secondary text-lg";
+    const inativo = "text-primary";
+    
+    return `${base} ${activeSection === sectionId ? ativo : inativo}`;
+  }
+
+  const handleNavigate = (e: React.MouseEvent<HTMLAnchorElement>, sectionId: string) => {
+    e.preventDefault();
+    
+    if (isSpecialPage) {
+      router.push(`/#${sectionId}`);
+    } else {
+      
+      setActiveSection(sectionId);
+      const element = document.getElementById(sectionId);
+      element?.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
 
   const [isOpen, setIsOpen] = useState(false);
 
@@ -25,7 +62,7 @@ export function Header() {
 
   return (
     <header className="bg-transparent text-black my-4 mx-5 relative">
-      <div className="flex items-center justify-between">
+      <div className="fixed w-full flex items-center justify-between px-10 z-10">
         <Image
           className="w-12 h-auto rounded-full md:ml-7"
           src="/logo.png"
@@ -35,18 +72,18 @@ export function Header() {
         />
 
         <nav className="hidden md:flex items-center ml-10 gap-10 md:mr-7">
-          <Link className={navLinkPaths("/login", pathname)} href="/auth/login">
+          <Link className={navLinkPaths("/login",)} href="/auth/login">
             Login
           </Link>
-          <Link className={navLinkPaths("/", pathname)} href="/">
+          <a className={navLinkPaths("home")} href="#home" onClick={(e) => handleNavigate(e, "home")}>
             Home
-          </Link>
-          <Link className={navLinkPaths("/pets", pathname)} href="/pets">
-            Pets
-          </Link>
-          <Link className={navLinkPaths("/sobre", pathname)} href="/sobre">
+          </a>
+          <a className={navLinkPaths("sobre", )} href="#sobre" onClick={(e) => handleNavigate(e, "sobre")}>
             Sobre nós
-          </Link>
+          </a>
+          <a className={navLinkPaths("pets")} href="#pets" onClick={(e) => handleNavigate(e, "pets")}>
+            Pets
+          </a>
         </nav>
 
         <button
@@ -117,17 +154,17 @@ export function Header() {
             Login
           </Link>
 
-          <Link onClick={toggleMenu} className={mobileLinkStyle} href="/">
+          <a onClick={toggleMenu} className={mobileLinkStyle} href="#home">
             Home
-          </Link>
+          </a>
 
-          <Link onClick={toggleMenu} className={mobileLinkStyle} href="/pets">
-            Pets
-          </Link>
-
-          <Link onClick={toggleMenu} className={mobileLinkStyle} href="/sobre">
+          <a onClick={toggleMenu} className={mobileLinkStyle} href="#sobre">
             Sobre nós
-          </Link>
+          </a>
+
+          <a onClick={toggleMenu} className={mobileLinkStyle} href="#pets">
+            Pets
+          </a> 
         </nav>
       </div>
     </header>
