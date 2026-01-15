@@ -161,7 +161,8 @@ export async function GET() {
       monthlyMovements: monthlyData,
       activeVolunteers: activeVolunteers.map(v => ({
         name: v.name,
-        date: v.entryDate.toLocaleDateString('pt-BR')
+        date: v.entryDate.toLocaleDateString('pt-BR'),
+        imageUrl: v.imageUrl
       }))
     })
   } catch (error) {

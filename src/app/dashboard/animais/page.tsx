@@ -266,10 +266,10 @@ export default function AnimaisPage() {
                 </div>
               </div>
               <div className="flex gap-3 justify-end w-85">
-                <Button type="submit" className="text-sm py-2 px-4">
-                  {editingAnimal ? "Salvar Alterações" : "Adicionar Animal"}
+                <Button type="submit" className="min-w-[160px] text-sm py-2 px-4">
+                  {editingAnimal ? "Salvar Alterações" : "Adicionar"}
                 </Button>
-                <Button type="button" variant="secondary" onClick={handleCancel} className="text-sm py-2 px-4">
+                <Button type="button" variant="secondary" onClick={handleCancel} className="min-w-[160px] text-sm py-2 px-4">
                   Cancelar
                 </Button>
               </div>
