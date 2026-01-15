@@ -1,13 +1,13 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, Suspense } from "react"
 import Image from "next/image"
 import { Input } from "@/components/ui/Input"
 import { Button } from "@/components/ui/Button"
 import { useRouter, useSearchParams } from "next/navigation"
 import { signIn } from "next-auth/react"
 
-export default function LoginPage() {
+function LoginForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [email, setEmail] = useState("")
@@ -136,5 +136,17 @@ export default function LoginPage() {
 
       <Image src="/dog-background-login.png" alt="Dog" width={850} height={850} className="absolute bottom-0 right-0" />
     </div>
+  )
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-[#FFFDD0] flex items-center justify-center">
+        <div className="text-teal-400 text-lg">Carregando...</div>
+      </div>
+    }>
+      <LoginForm />
+    </Suspense>
   )
 }

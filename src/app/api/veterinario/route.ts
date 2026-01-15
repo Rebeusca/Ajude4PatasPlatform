@@ -32,7 +32,7 @@ export async function POST(request: Request) {
         doctor: body.doctor,         
         cost: body.cost,             
         illness: body.illness,       
-        description: body.observations, 
+        description: body.observations || "", 
         date: body.date ? new Date(body.date) : new Date(),
       },
       include: {

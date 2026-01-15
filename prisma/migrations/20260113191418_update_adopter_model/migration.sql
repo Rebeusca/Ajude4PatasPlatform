@@ -1,2 +1,2 @@
--- AlterTable
-ALTER TABLE "Adopter" ADD COLUMN     "observations" TEXT;
+-- AlterTable (coluna já existe na migration anterior, então não precisa adicionar novamente)
+-- ALTER TABLE "Adopter" ADD COLUMN "observations" TEXT;

@@ -1,11 +1,12 @@
 "use client"
 
+import { Suspense } from "react"
 import { useSearchParams } from "next/navigation"
 import Image from "next/image"
 import { Button } from "@/components/ui/Button"
 import Link from "next/link"
 
-export default function AuthErrorPage() {
+function AuthErrorContent() {
   const searchParams = useSearchParams()
   const error = searchParams.get("error")
 
@@ -52,3 +53,14 @@ export default function AuthErrorPage() {
   )
 }
 
+export default function AuthErrorPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-[#FFFDD0] flex items-center justify-center">
+        <div className="text-teal-400 text-lg">Carregando...</div>
+      </div>
+    }>
+      <AuthErrorContent />
+    </Suspense>
+  )
+}
