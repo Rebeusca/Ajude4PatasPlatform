@@ -489,7 +489,6 @@ const filteredAdoptions = Array.isArray(adoptions)
                 <h3 className="mt-8 text-lg font-bold text-gray-800 mb-4">{a.adopter?.name} e {a.animal?.name}</h3>
                 <div className="w-full flex justify-center mb-6">
                   <div className="flex -space-x-4">
-                    <img src={a.adopter?.imageUrl || "/default-avatar.png"} className="w-16 h-16 rounded-full border-2 border-white object-cover z-10 shadow-sm" />
                     <img src={a.animal?.imageUrl || "/default-animal.png"} className="w-16 h-16 rounded-full border-2 border-white object-cover z-0 shadow-sm" />
                   </div>
                 </div>
