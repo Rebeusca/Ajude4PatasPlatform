@@ -2,14 +2,11 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   reactCompiler: true,
-  // @ts-ignore - Ignora erro de tipagem local se a versão do Next for conflitante
   typescript: {
+    // Ignora erros de tipagem para forçar o build
     ignoreBuildErrors: true,
   },
-  // @ts-ignore - Ignora erro de tipagem local para garantir o build
-  eslint: {
-    ignoreDuringBuilds: true,
-  } as any,
+  // Removida a chave 'eslint' que estava causando o erro de "Unrecognized key"
 };
 
 export default nextConfig;
